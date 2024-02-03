@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Random;
+import java.util.UUID;
 
 public class HBasePersistenceStorage {
     private static HBasePersistenceStorage INSTANCE = null;
@@ -78,10 +79,7 @@ public class HBasePersistenceStorage {
     }
 
     private byte[] generateRowKey() {
-        Random r = new Random();
-        char c = (char)(r.nextInt(26) + 'a');
-        String seq = String.valueOf(System.currentTimeMillis());
-        String key = c + seq;
+        String key = UUID.randomUUID().toString();
         return key.getBytes(StandardCharsets.UTF_8);
     }
 
