@@ -1,0 +1,1 @@
+spark-submit --class "edu.miu.cs.cs523.SparkSteamingImport" --files "application.properties" --master yarn --verbose realtime-input-streaming-1.0-SNAPSHOT.jar "application.properties"

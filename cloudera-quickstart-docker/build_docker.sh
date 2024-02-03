@@ -1,0 +1,1 @@
+docker build . -t cloudera-quickstart-jdk8

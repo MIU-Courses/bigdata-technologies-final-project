@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  kafka:
+    image: docker.io/bitnami/kafka:3.6
+    ports:
+      - "9094:9094"
+    volumes:
+      - ${PWD}/mounts/kafka-data:/bitnami/kafka
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    networks:
+      - cloudera-net
+  cloudera:
+    image: cloudera-quickstart-jdk8
+    hostname: quickstart.cloudera
+    privileged: true
+    entrypoint: /usr/bin/docker-quickstart
+    tty: true
+    stdin_open: true
+    command: bash
+    working_dir: "/home/cloudera/app"
+    ports:
+      - "8888:8888"
+      - "7180:7180"
+      - "50070:50070"
+      - "80:80"
+      - "2181:2181"
+      - "60000:60000"
+      - "60010:60010"
+      - "60020:60020"
+      - "60030:60030"
+    volumes:
+      - ${PWD}/mounts/cloudera:/home/cloudera/app
+    networks:
+      - cloudera-net
+
+networks:
+  cloudera-net:
+    driver: bridge
