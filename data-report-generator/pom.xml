@@ -14,7 +14,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spark-core.version>1.6.0</spark-core.version>
         <hbase.version>0.98.24-hadoop2</hbase.version>
-        <hive-exec.version>1.1.0</hive-exec.version>
     </properties>
 
     <dependencies>
@@ -32,11 +31,6 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_2.10</artifactId>
             <version>${spark-core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-exec</artifactId>
-            <version>${hive-exec.version}</version>
         </dependency>
         <dependency>
             <groupId>org.xerial.snappy</groupId>

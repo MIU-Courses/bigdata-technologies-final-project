@@ -18,11 +18,12 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 public class DataReportGenerator {
-    private static final Duration DEFAULT_BATCH_DURATION = new Duration(60000);
+    private static final Duration DEFAULT_BATCH_DURATION = new Duration(120000);
     private static final String APP_NAME = "JavaDataReportGenerator";
     private static final String WAREHOUSE_DIR_KEY = "spark.sql.warehouse.dir";
     private static final String METASTORE_URIS_KEY = "hive.metastore.uris";
     private static final String SCRIPT_FILE_KEY = "sql.file";
+    private static final String RE_TRIGGER_ENABLED_KEY = "retrigger.enabled";
     private static final String BATCH_DURATION_KEY = "batch.duration";
 
     public static void main(String[] args) throws IOException {
@@ -37,25 +38,27 @@ public class DataReportGenerator {
         }
 
         SparkContext sc = new SparkContext(conf);
-        JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
-
-        JavaStreamingContext jssc = new JavaStreamingContext(jsc, getDuration(properties));
-        JavaReceiverInputDStream<String> exeCount = jssc.receiverStream(new KeepStreamAliveReceiver());
-
         SQLContext sqlContext = new HiveContext(sc);
         String sqlScript = loadSQLScript(properties);
         execute(sqlContext, sqlScript);
 
-        exeCount.print();
-        jssc.start();
-        jssc.awaitTermination();
+        if (properties.containsKey(RE_TRIGGER_ENABLED_KEY)
+                && properties.getProperty(RE_TRIGGER_ENABLED_KEY).equals("true")) {
+            JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
+            JavaStreamingContext jssc = new JavaStreamingContext(jsc, getDuration(properties));
+            JavaReceiverInputDStream<String> exeCount = jssc.receiverStream(new KeepStreamAliveReceiver());
+            exeCount.print();
+            jssc.start();
+            jssc.awaitTermination();
+        }
     }
 
     private static void execute(SQLContext sqlContext, String scriptContent) {
         String[] statements = scriptContent.split(";");
+
         for (String statement : statements) {
             if (!statement.trim().isEmpty()) {
-                sqlContext.executeSql(statement);
+                sqlContext.sql(statement);
             }
         }
     }

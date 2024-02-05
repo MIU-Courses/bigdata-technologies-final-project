@@ -1,4 +1,4 @@
 spark-submit --class "edu.miu.cs.cs523.SparkSteamingImport" --files "realtime-input-streaming.properties" --master yarn --verbose realtime-input-streaming-1.0-SNAPSHOT.jar "realtime-input-streaming.properties"
 
 
-spark-submit --class "edu.miu.cs.cs523.DataReportGenerator" --files "data-report-generator.properties,report.sql" --master yarn --verbose data-report-generator-1.0-SNAPSHOT.jar "data-report-generator.properties"
+spark-submit --class "edu.miu.cs.cs523.DataReportGenerator" --files data-report-generator.properties,report.sql --master yarn --verbose data-report-generator-1.0-SNAPSHOT.jar "data-report-generator.properties"
