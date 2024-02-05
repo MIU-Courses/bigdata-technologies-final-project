@@ -20,28 +20,29 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SparkSteamingImport {
+    private static final Duration DEFAULT_BATCH_DURATION = new Duration(5000);
     private static final String APP_NAME = "JavaDirectKafkaImport";
+    private static final String BATCH_DURATION_KEY = "batch.duration";
 
     public static void main(String[] args) throws IOException {
         HBasePersistenceStorage.initialize();
 
         String configFilePath = args[0];
-        Map<String, String> kafkaParams = loadConfig(configFilePath);
-        Set<String> topics = Arrays.stream(kafkaParams.get("topics").split(",")).collect(Collectors.toSet());
-
+        Map<String, String> appParams = loadConfig(configFilePath);
+        Set<String> topics = Arrays.stream(appParams.get("topics").split(",")).collect(Collectors.toSet());
 
         SparkConf conf = new SparkConf().setAppName(APP_NAME).set("spark.driver.allowMultipleContexts", "true");
         SparkContext sc = new SparkContext(conf);
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(sc);
 
-        JavaStreamingContext jssc = new JavaStreamingContext(jsc, new Duration(5000));
+        JavaStreamingContext jssc = new JavaStreamingContext(jsc, getDuration(appParams));
         JavaPairInputDStream<String, String> messages = KafkaUtils.createDirectStream(
                 jssc,
                 String.class,
                 String.class,
                 StringDecoder.class,
                 StringDecoder.class,
-                kafkaParams,
+                appParams,
                 topics
         );
         // Get the lines, split them into words, count the words and print
@@ -54,6 +55,14 @@ public class SparkSteamingImport {
         });
         jssc.start();
         jssc.awaitTermination();
+    }
+
+    private static Duration getDuration(Map<String, String> properties) {
+        if (properties.containsKey(BATCH_DURATION_KEY)) {
+            long millis = Long.parseLong(properties.get(BATCH_DURATION_KEY));
+            return new Duration(millis);
+        }
+        return DEFAULT_BATCH_DURATION;
     }
 
     private static Map<String, String> loadConfig(String path) throws IOException {
