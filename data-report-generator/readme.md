@@ -1,7 +1,53 @@
-# Creating Project using Spark SQL and HBase, Hive together
-This process will retrive the data get from Spark Streaming and Kafka, then This part will analyze these to get useful data for analysis users trends and interests on Reddit.
+# Data Report Generator
+The Data Report Generator Component is designed to read raw data stored in HBase, analyze them and export analyzed data into new tables(also stored in HBase) used for report.
+This component will keep update newer data every a period of time(based on configuration), ensure the information usually up-to-date.
 
-## Requirement
+The component's main dependencies:
+- Spark Streaming
+- Spark Hive
+- HBase Client
+
+## Build The Project
+
+> The project requires JDK 1.8 and Maven
+
+To build the project run:
+```
+mvn clean package
+```
+
+## Run The Application
+
+Assume that docker container for `cloudera-quickstart-jdk8` was up and running
+> Directory [mounts/cloudera](../mounts/cloudera) is mounted into `/home/cloudera/app` inside the docker container
+
+- Copy `target/data-report-generator-XXX.jar` to `mounts/cloudera`
+- Copy [src/main/resources/realtime-input-streaming.properties](./src/main/resources/data-report-generator.properties) to [mounts/cloudera](../mounts/cloudera)
+- Update properties in the `data-report-generator.properties`
+- Attach to running `cloudera-quickstart-jdk8` docker container's shell
+```
+docker attach <container-id>
+```
+To get the docker container ID run:
+```
+docker ps
+```
+- Change the directory to `/home/cloudera/app`:
+```
+cd /home/cloudera/app
+```
+- Submit a Spark Job:
+```
+spark-submit --class "edu.miu.cs.cs523.DataReportGenerator" --files data-report-generator.properties,report.sql --master yarn --verbose data-report-generator-1.0-SNAPSHOT.jar "data-report-generator.properties"
+```
+##Addtional Information
+-If Data Report Generator does not work well, such as: There is not new table, or data does not insert into them.This is a prolem of Spark SQL 1.6.0 that it cannot execute "INSERT INTO" statement
+Issue details: https://github.com/apache/spark/pull/17989 
+There fore, let's try to excute manual:
+- Go forward to [/data-report-generator/src/main/resources](../data-report-generator/src/main/resources), you will see 2 files: 'delete_tables.sql' and 'report.sql'
+- Open Hive Browser or Hive shell
+- Paste and Run the contents of 'delete_tables.sql' first, 'then report.sql'
+
 ## Explanation
 
 First step, creates an external table named reddit_posts in Hive, which is linked to data stored in an HBase table named reddit_posts. The table structure and the mapping between Hive columns and HBase columns are defined, allowing users to query and manipulate the HBase data using Hive SQL commands 
