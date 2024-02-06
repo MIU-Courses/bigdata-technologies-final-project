@@ -22,7 +22,7 @@ Assume that docker container for `cloudera-quickstart-jdk8` was up and running
 > Directory [mounts/cloudera](../mounts/cloudera) is mounted into `/home/cloudera/app` inside the docker container
 
 - Copy `target/data-report-generator-XXX.jar` to `mounts/cloudera`
-- Copy [src/main/resources/realtime-input-streaming.properties](./src/main/resources/data-report-generator.properties) to [mounts/cloudera](../mounts/cloudera)
+- Copy [src/main/resources/data-report-generator.properties](./src/main/resources/data-report-generator.properties) to [mounts/cloudera](../mounts/cloudera)
 - Update properties in the `data-report-generator.properties`
 - Attach to running `cloudera-quickstart-jdk8` docker container's shell
 ```
