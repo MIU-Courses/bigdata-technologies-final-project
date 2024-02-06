@@ -10,7 +10,7 @@
 Open Tableau Desktop, File -> Open -> Visualization.twb.
 ![Alt text](openVisualization.png "a title")
 
-In part “To a Server” click “more”, then select “Other Databases (ODBC)”. In tab “Connect Using”, choose “Driver” then select “CData ODBC Driver for Apache HBase” . Click “Connect” then input Server (Check this information from VMWare or Docker – REST HBase, in my case is 127.0.0.1) and Port(Check this information from VMWare or Docker – REST HBase, in my case is 8070) in tab “Connection Attributes”.
+In part `To a Server` click “more -> Other Databases (ODBC). In tab `Connect Using`, choose “Driver -> CData ODBC Driver for Apache HBase” . Click “Connect” then input Server (Check this information from VMWare or Docker – REST HBase, in my case is 127.0.0.1) and Port(Check this information from VMWare or Docker – REST HBase, in my case is 8070) in tab `Connection Attributes`.
 ![Alt text](connectToHbase.png "a title")
 ## Public the project to cloud
 To public in cloud, From Dashboard Screen, Choose Server -> Save to Tableau -> Then login to tableau cloud  
