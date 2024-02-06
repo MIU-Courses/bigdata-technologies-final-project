@@ -3,6 +3,7 @@ The Data Report Generator Component is designed to read raw data stored in HBase
 This component will keep update newer data every a period of time(based on configuration), ensure the information usually up-to-date.
 
 The component's main dependencies:
+- Spark SQL
 - Spark Streaming
 - Spark Hive
 - HBase Client
@@ -22,6 +23,7 @@ Assume that docker container for `cloudera-quickstart-jdk8` was up and running
 > Directory [mounts/cloudera](../mounts/cloudera) is mounted into `/home/cloudera/app` inside the docker container
 
 - Copy `target/data-report-generator-XXX.jar` to `mounts/cloudera`
+- Copy `src/main/resources/delete-tables.sql` and `src/main/resources/report.sql` to `mounts/cloudera`
 - Copy [src/main/resources/data-report-generator.properties](./src/main/resources/data-report-generator.properties) to [mounts/cloudera](../mounts/cloudera)
 - Update properties in the `data-report-generator.properties`
 - Attach to running `cloudera-quickstart-jdk8` docker container's shell
@@ -40,11 +42,13 @@ cd /home/cloudera/app
 ```
 spark-submit --class "edu.miu.cs.cs523.DataReportGenerator" --files data-report-generator.properties,report.sql --master yarn --verbose data-report-generator-1.0-SNAPSHOT.jar "data-report-generator.properties"
 ```
-##Addtional Information
+
+## Addtional Information
+
 -If Data Report Generator does not work well, such as: There is not new table, or data does not insert into them.This is a prolem of Spark SQL 1.6.0 that it cannot execute "INSERT INTO" statement
 Issue details: https://github.com/apache/spark/pull/17989 
 There fore, let's try to excute manual:
-- Go forward to [/data-report-generator/src/main/resources](../data-report-generator/src/main/resources), you will see 2 files: 'delete_tables.sql' and 'report.sql'
+- Go forward to [mounts/cloudera](../mounts/cloudera), you will see 2 files: 'delete_tables.sql' and 'report.sql'
 - Open Hive Browser or Hive shell
 - Paste and Run the contents of 'delete_tables.sql' first, 'then report.sql'
 
