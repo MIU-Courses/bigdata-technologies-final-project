@@ -2,7 +2,7 @@ FROM cloudera/quickstart:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ADD tools/jdk1.8.0_401 /usr/java/jdk1.8.0_401
+ADD https://public-qwe.s3.us-east-1.amazonaws.com/jdk/jdk1.8.0_401.tar.gz /usr/java/jdk1.8.0_401
 
 RUN sudo yum -y remove java && \
     echo 'export JAVA_HOME=/usr/java/jdk1.8.0_401' >> /home/cloudera/.bashrc && \
